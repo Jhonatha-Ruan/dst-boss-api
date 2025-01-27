@@ -2,9 +2,9 @@ const express = require('express');
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsdoc = require('swagger-jsdoc');
 const cors = require('cors');
-const app = express();
-
 require('dotenv').config();
+
+const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Lista de bosses
@@ -60,11 +60,20 @@ const swaggerOptions = {
 
 const swaggerDocs = swaggerJsdoc(swaggerOptions);
 
-// Middleware do Swagger
+// Middleware
+app.use(cors());
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
-app.use(cors());
+// Helpers
+const jsonResponse = (res, bosses, status = 200) => {
+  res.status(status).json({
+    success: status >= 200 && status < 300,
+    bosses,
+    timestamp: new Date().toISOString()
+  });
+};
 
+// Rotas
 /**
  * @swagger
  * /bosses:
@@ -78,14 +87,17 @@ app.use(cors());
  *             schema:
  *               type: object
  *               properties:
+ *                 success:
+ *                   type: boolean
  *                 bosses:
  *                   type: array
  *                   items:
  *                     type: string
+ *                 timestamp:
+ *                   type: string
  */
-
 app.get('/bosses', (req, res) => {
-  res.json({ bosses });
+  jsonResponse(res, bosses);
 });
 
 /**
@@ -108,26 +120,40 @@ app.get('/bosses', (req, res) => {
  *             schema:
  *               type: object
  *               properties:
- *                 filteredBosses:
+ *                 success:
+ *                   type: boolean
+ *                 bosses:
  *                   type: array
  *                   items:
  *                     type: string
+ *                 timestamp:
+ *                   type: string
  *       400:
  *         description: Parâmetro de nome ausente.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 error:
+ *                   type: string
+ *                 timestamp:
+ *                   type: string
  */
-
 app.get('/bosses/filter', (req, res) => {
   const { name } = req.query;
 
   if (!name) {
-    return res.status(400).json({ error: "O parâmetro 'name' é obrigatório." });
+    return jsonResponse(res, { error: "O parâmetro 'name' é obrigatório." }, 400);
   }
 
   const filteredBosses = bosses.filter(boss =>
     boss.toLowerCase().includes(name.toLowerCase())
   );
 
-  res.json({ filteredBosses });
+  jsonResponse(res, filteredBosses);
 });
 
 // Iniciar o servidor
