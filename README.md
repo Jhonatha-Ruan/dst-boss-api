@@ -71,3 +71,22 @@ Uma API para listar e filtrar todos os bosses do jogo **Don't Starve Together**.
     ...
   ]
 }
+```
+### **2. Filtrar bosses pelo nome**
+**Rota:** `GET /bosses/filter`  
+**Descrição:** Filtra a lista de bosses pelo nome ou parte do nome fornecido no parâmetro de consulta.  
+
+**Parâmetros de Query:**
+- `name` (string, obrigatório): Nome ou parte do nome do boss para realizar o filtro.  
+
+**Exemplo de Requisição:**  
+`GET /bosses/filter?name=deer`
+
+**Exemplo de Resposta:**
+```json
+{
+  "filteredBosses": [
+    "Deerclops",
+    "Crystal Deerclops"
+  ]
+}
