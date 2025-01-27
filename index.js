@@ -1,6 +1,7 @@
 const express = require('express');
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsdoc = require('swagger-jsdoc');
+const cors = require('cors');
 const app = express();
 
 require('dotenv').config();
@@ -61,6 +62,8 @@ const swaggerDocs = swaggerJsdoc(swaggerOptions);
 
 // Middleware do Swagger
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+
+app.use(cors());
 
 /**
  * @swagger
